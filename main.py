@@ -5,7 +5,18 @@ import settings
 from pprint import pprint
 
 def build_csv_row(doi, author):
-	pass
+	if author.get('middle_name'):
+		name = '{first_name} {middle_name} {last_name}'.format(**author)
+	else:
+		name = '{first_name} {last_name}'.format(**author)
+
+	if author['settings'].get('orcid'):
+		parts = author['settings'].get('orcid').split('http://orcid.org/')
+		orcid = parts[1]
+	else:
+		orcid = ''
+
+	record = [doi, name, author.get('email'), orcid]
 
 def get_csv_data(cursor, published_articles, journal_code):
 
@@ -19,9 +30,12 @@ def get_csv_data(cursor, published_articles, journal_code):
 		if doi:
 			authors = db.get_authors(cursor, pub_article.get('article_id'))
 
+			author_emails = []
 			for author in authors:
-				if not author.get('email') in settings.EXCLUDED_EMAILS:
-					row = 
+				if not author.get('email') in settings.EXCLUDED_EMAILS and not author.get('email') in author_emails:
+					author_emails.append(author.get('email'))
+					row = build_csv_row(doi, author)
+					records.append(row)
 
 # connect to the database
 cursor, con = db.connect_to_db()

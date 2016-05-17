@@ -58,11 +58,11 @@ def get_published_articles(cur, journal_id):
 	results = cur.fetchall()
 	return results
 
-def get_settings(cur, article_id, table):
+def get_settings(cur, article_id, table, identifier):
 	sql = '''
 	SELECT * FROM %s
-	WHERE article_id = %s
-	''' % (table, article_id)
+	WHERE %s = %s
+	''' % (table, identifier, article_id)
 	cur.execute(sql)
 	results = cur.fetchall()
 
@@ -77,20 +77,20 @@ def get_article(cur, article_id):
 	results = cur.fetchall()
 
 	for result in results:
-		result['settings'] = dict_ojs_settings_results(get_settings(cur, article_id, table='article_settings'))
+		result['settings'] = dict_ojs_settings_results(get_settings(cur, article_id, table='article_settings', identifier='article_id'))
 
-	return results
+	return results[0]
 
 def get_authors(cur, article_id):
 	sql = '''
 	SELECT * FROM authors
-	WHERE article_id = %s
+	WHERE submission_id = %s
 	''' % article_id
 	cur.execute(sql)
 	results = cur.fetchall()
 
 	for result in results:
-		result['settings'] = dict_ojs_settings_results(get_settings(cur, article_id, table='author_settings'))
+		result['settings'] = dict_ojs_settings_results(get_settings(cur, result.get('author_id'), table='author_settings', identifier='author_id'))
 
 	return results
 
