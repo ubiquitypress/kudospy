@@ -53,11 +53,9 @@ def generate_csv(journal, records):
 
 	file_name = "{0}-doi-{1}-{2}-{3}.csv".format(journal.get('path'), year, month, day)
 
-	pprint(records)
 	with open(os.path.join(settings.BASE_DIR, 'csv', file_name), 'w') as fp:
 	    a = csv.writer(fp, delimiter=',')
 	    for row in records:
-	    	print row
 	    	a.writerow(row)
 
 # connect to the database
